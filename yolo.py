@@ -4,7 +4,7 @@ Class definition of YOLO_v3 style detection model on image and video
 """
 
 import colorsys
-import os
+import sys
 from timeit import default_timer as timer
 
 import numpy as np
@@ -17,6 +17,7 @@ from yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
 from yolo3.utils import letterbox_image
 import os
 from keras.utils import multi_gpu_model
+
 
 class YOLO(object):
     _defaults = {
@@ -210,3 +211,15 @@ def detect_video(yolo, video_path, output_path=""):
             break
     yolo.close_session()
 
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print('please specify a jpeg file to detect.')
+    else:
+        yolo = YOLO()
+        name = sys.argv[1]
+        image = Image.open(name)
+        boxed_image = yolo.detect_image(image)
+        n_ext = name.rindex('.')
+        score_file = name[0:n_ext] + '_tfscore' + name[n_ext:]
+        boxed_image.save(score_file, "JPEG")
